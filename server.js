@@ -73,6 +73,93 @@
 //   })
 //   .catch((error) => console.log(error.message));
 
+// const express = require("express");
+// const mongoose = require("mongoose");
+// const cors = require("cors");
+// const session = require("express-session");
+// const MongoStore = require("connect-mongo"); // Add for session persistence
+// const bodyParser = require("body-parser");
+// const path = require("path");
+// require("dotenv").config(); // Load .env variables
+
+// // Import routes
+// const userRoutes = require("./routes/userRoutes");
+// const vendorRoutes = require("./routes/vendor");
+// const productRoutes = require("./routes/productRoutes");
+// const categoryRoutes = require("./routes/category");
+// const orderRoutes = require("./routes/orderRoutes");
+// const billRoutes = require("./routes/billRoutes");
+// const dashboardRoutes = require("./routes/dashboardRoutes");
+// const serviceRoutes = require("./routes/serviceRoutes");
+// const bookingRoutes = require("./routes/bookingRoutes");
+// const reviewRoutes = require("./routes/reviewRoutes");
+// const laborRoutes = require("./routes/laborRoutes");
+
+// const app = express();
+// const PORT = process.env.PORT;
+// const MONGO_URI = process.env.MONGO_URI;
+// const FRONTEND_URL = process.env.FRONTEND_URL;
+// const SESSION_SECRET = process.env.SESSION_SECRET;
+
+// // Middleware
+// app.use(express.json());
+// app.use(bodyParser.json());
+
+// // Configure CORS
+// app.use(
+//   cors({
+//     origin: FRONTEND_URL,
+//     credentials: true,
+//     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+//     allowedHeaders: ["Content-Type", "Authorization"],
+//   })
+// );
+
+// // Configure session with MongoStore
+// app.use(
+//   session({
+//     secret: SESSION_SECRET,
+//     resave: false,
+//     saveUninitialized: false,
+//     store: MongoStore.create({
+//       mongoUrl: MONGO_URI,
+//       collectionName: "sessions",
+//     }),
+//     cookie: {
+//       secure: process.env.NODE_ENV, // Secure in production
+//       httpOnly: true,
+//       sameSite: process.env.NODE_ENV,
+//       maxAge: 24 * 60 * 60 * 1000, // 24 hours
+//     },
+//   })
+// );
+
+// // Serve static files
+// app.use("/uploads", express.static(path.join(__dirname, "Uploads")));
+
+// // Routes
+// app.use("/api/users", userRoutes);
+// app.use("/api/vendor", vendorRoutes);
+// app.use("/api/product", productRoutes);
+// app.use("/api/category", categoryRoutes);
+// app.use("/api/orders", orderRoutes);
+// app.use("/api/bills", billRoutes);
+// app.use("/api/dashboard", dashboardRoutes);
+// app.use("/api/services", serviceRoutes);
+// app.use("/api/bookings", bookingRoutes);
+// app.use("/api/review", reviewRoutes);
+// app.use("/api/labor", laborRoutes);
+
+// // Debug session
+// app.get("/api/check-session", (req, res) => {
+//   console.log("🔍 Session data:", req.session);
+//   res.json({ sessionData: req.session });
+// });
+
+// // Connect to MongoDB and start server
+// mongoose.connect(process.env.MONGO_URI)
+//   .then(() => console.log('Connected to MongoDB'))
+//   .catch((err) => console.error('MongoDB connection error:', err));
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -96,7 +183,7 @@ const reviewRoutes = require("./routes/reviewRoutes");
 const laborRoutes = require("./routes/laborRoutes");
 
 const app = express();
-const PORT = process.env.PORT;
+const PORT = process.env.PORT; // Automatically used by Render
 const MONGO_URI = process.env.MONGO_URI;
 const FRONTEND_URL = process.env.FRONTEND_URL;
 const SESSION_SECRET = process.env.SESSION_SECRET;
@@ -126,9 +213,9 @@ app.use(
       collectionName: "sessions",
     }),
     cookie: {
-      secure: process.env.NODE_ENV, // Secure in production
+      secure: process.env.NODE_ENV === "production", // Secure in production
       httpOnly: true,
-      sameSite: process.env.NODE_ENV,
+      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
     },
   })
@@ -157,6 +244,11 @@ app.get("/api/check-session", (req, res) => {
 });
 
 // Connect to MongoDB and start server
-mongoose.connect(process.env.MONGO_URI)
+mongoose.connect(MONGO_URI)
   .then(() => console.log('Connected to MongoDB'))
   .catch((err) => console.error('MongoDB connection error:', err));
+
+// Listen on dynamic port from Render
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
