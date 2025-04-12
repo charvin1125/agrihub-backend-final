@@ -96,10 +96,10 @@ const reviewRoutes = require("./routes/reviewRoutes");
 const laborRoutes = require("./routes/laborRoutes");
 
 const app = express();
-const PORT = process.env.PORT || 5000;
-const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/ai";
-const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3000";
-const SESSION_SECRET = process.env.SESSION_SECRET || "charvin1121";
+const PORT = process.env.PORT;
+const MONGO_URI = process.env.MONGO_URI;
+const FRONTEND_URL = process.env.FRONTEND_URL;
+const SESSION_SECRET = process.env.SESSION_SECRET;
 
 // Middleware
 app.use(express.json());
@@ -126,9 +126,9 @@ app.use(
       collectionName: "sessions",
     }),
     cookie: {
-      secure: process.env.NODE_ENV === "production", // Secure in production
+      secure: process.env.NODE_ENV, // Secure in production
       httpOnly: true,
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      sameSite: process.env.NODE_ENV,
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
     },
   })
